@@ -39,8 +39,7 @@ type Bitizen(name: string, dreamJob: string, skills: Skill[]) =
     let skillSum = skills |> Array.sumBy (fun s -> s.Value) |> decimal
     member this.Name = name
     member this.DreamJob = dreamJob
-    member this.SortValueFor (color: Color) =
- (*
+    (*
           |
           V
         0,9,0 => 9*10 + 10-0 = 100
@@ -53,7 +52,8 @@ type Bitizen(name: string, dreamJob: string, skills: Skill[]) =
         skill * 10 + 10 - avg(rest of skills)
 
         I.e., sort bitizens so that at an equal skill level then specialists are ranked higher than generalists.
-*)
+    *)
+    member this.SortValueFor (color: Color) =
         let matchingSkill = decimal (skills |> (Array.find (fun s -> s.Color = color))).Value
         let avgOtherskills = (skillSum - matchingSkill) / 4m
         0m - (matchingSkill * 10m + 10m - avgOtherskills)
@@ -111,7 +111,7 @@ let main argv =
         |> List.ofSeq
 
     let dreamPositions, bitizens = fillPositions (fun j b -> j.Name.ciCompare(b.DreamJob)) jobs bitizens
-    let normalPositions, bitizens = fillPositions (fun j b -> true) jobs bitizens
+    let normalPositions, _ = fillPositions (fun j b -> true) jobs bitizens
 
     File.WriteAllLines("positions.txt", dreamPositions@normalPositions |> List.map (fun p -> string p))
 
